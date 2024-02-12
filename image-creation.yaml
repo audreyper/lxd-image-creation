@@ -1,0 +1,53 @@
+ 
+- name: Create a custom container
+  hosts: myhosts
+  gather_facts: false
+  become: yes
+  roles: 
+    - system_initialization
+
+- name: Further customize the newly created container
+  hosts: lxd_image
+  gather_facts: false
+  become: yes
+  roles: 
+    - system_config
+  
+- name: Publish image 
+  hosts: myhosts
+  gather_facts: false
+  become: yes
+  roles:
+    - publish  
+
+   
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

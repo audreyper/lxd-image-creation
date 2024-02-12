@@ -1,0 +1,48 @@
+   
+- name: include vars file
+  include_vars: "{{ playbook_dir }}/variables.yaml"
+
+- name: Enable PubkeyAuthentication in sshd_config
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PubkeyAuthentication'
+    line: 'PubkeyAuthentication yes'
+
+- name: Create user "{{ username2 }}"
+  ansible.builtin.user:
+    name: "{{ username2 }}"
+    shell: /bin/bash
+    password: "{{ user2_pass }}"
+    state: present
+    groups: sudo
+    append: yes
+  become: yes
+
+- name: Set permissions for the .ssh directory and authorized_keys file for "{{ username2 }}"
+  ansible.builtin.file:
+    path: "/home/{{ username2 }}/.ssh/"
+    mode: "0700"
+    state: directory
+    owner: "{{ username2 }}"
+    group: "{{ username2 }}"
+
+- name: Ensure authorized_keys file exists for "{{ username2 }}"
+  ansible.builtin.file:
+    path: "/home/{{ username2 }}/.ssh/authorized_keys"
+    state: touch
+    owner: "{{ username2 }}"
+    group: "{{ username2 }}"
+    mode: "0600"
+
+- name: Add SSH public key to authorized_keys for {{ username2 }}
+  ansible.builtin.authorized_key:
+    user: "{{ username2 }}"
+    key: "{{ lookup('file', '~/.ssh/id_ecdsa.pub') }}"
+    state: present
+
+
+
+
+
+
+    
